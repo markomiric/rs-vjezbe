@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  socialapi:
+    build: ./socialAPI
+    ports:
+    
+      - "3500:3500"
+    networks:
+      - social-network
+
+  authapi:
+    build: ./authAPI
+    ports:
+      - "8000:8000"
+    networks:
+      - social-network
+
+networks:
+  social-network:
