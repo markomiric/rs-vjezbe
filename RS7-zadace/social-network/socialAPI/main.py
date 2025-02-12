@@ -30,10 +30,11 @@ async def authenticate_user(credentials: UserCredentials):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
-                "http://authapi:8000/login", json=credentials.model_dump()
+                "http://authapi:9000/login", json=credentials.model_dump()
             )
-            response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-            return response.json()
+            response.raise_for_status()
+            response_data = response.json()  # Parse the JSON response
+            return response_data.get("result")  # Extract the "result" value
         except httpx.HTTPStatusError as e:
             raise HTTPException(status_code=e.response.status_code, detail=str(e))
         except httpx.RequestError as e:
@@ -65,10 +66,15 @@ async def get_posts_by_user(
     credentials: UserCredentials,
     auth_result: bool = Depends(authenticate_user),
 ):
-    if not auth_result:
-        raise HTTPException(status_code=401, detail="Authentication failed")
-    user_posts = [post for post in posts if post["korisnik"] == korisnik]
-    return user_posts
+    try:
+        if not auth_result:
+            raise HTTPException(status_code=401, detail="Authentication failed")
+        user_posts = [post for post in posts if post["korisnik"] == korisnik]
+        return user_posts
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
+        )
 
 
 if __name__ == "__main__":

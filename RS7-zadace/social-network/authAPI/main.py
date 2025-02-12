@@ -65,9 +65,9 @@ async def login(request):
             user["korisnicko_ime"] == username
             and user["lozinka_hash"] == hashed_password
         ):
-            return web.json_response({"message": "Login successful"})
+            return web.json_response({"result": True})
 
-    return web.json_response({"error": "Invalid credentials"}, status=401)
+    return web.json_response({"result": False}, status=401)
 
 
 async def health(request):

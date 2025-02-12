@@ -3,15 +3,16 @@ services:
   socialapi:
     build: ./socialAPI
     ports:
-    
       - "3500:3500"
     networks:
       - social-network
+    depends_on:
+      - authapi
 
   authapi:
     build: ./authAPI
     ports:
-      - "8000:8000"
+      - "9000:9000"
     networks:
       - social-network
 
